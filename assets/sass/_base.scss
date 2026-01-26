@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: $bg-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: $text-dark;
+}
