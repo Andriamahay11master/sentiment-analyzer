@@ -12,15 +12,31 @@ from sklearn.metrics import accuracy_score, classification_report
 
 url = "https://raw.githubusercontent.com/dD2405/Twitter_Sentiment_Analysis/master/train.csv"
 data = pd.read_csv(url, encoding="latin-1")
+
+# Keep only relevant columns
 data = data[["tweet", "label"]]
 
-# Convert labels: 0 → negative, 4 → positive
+# -------------------------------
+# Normalize labels
+# 0 -> negative
+# 4 -> positive
+# -------------------------------
+
 data["label"] = data["label"].map({
     0: 0,
     4: 1
 })
 
+# 🔴 IMPORTANT: remove invalid labels created by mapping
+data = data.dropna(subset=["label"])
+
+# Ensure labels are integers (required by sklearn)
+data["label"] = data["label"].astype(int)
+
+# -------------------------------
 # Optional: sample for faster runs
+# -------------------------------
+
 max_samples = 50000
 if len(data) > max_samples:
     data = data.sample(max_samples, random_state=42)
