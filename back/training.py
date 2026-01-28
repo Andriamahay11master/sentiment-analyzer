@@ -14,6 +14,12 @@ url = "https://raw.githubusercontent.com/dD2405/Twitter_Sentiment_Analysis/maste
 data = pd.read_csv(url, encoding="latin-1")
 data = data[["tweet", "label"]]
 
+# Convert labels: 0 → negative, 4 → positive
+data["label"] = data["label"].map({
+    0: 0,
+    4: 1
+})
+
 # Optional: sample for faster runs
 max_samples = 50000
 if len(data) > max_samples:
