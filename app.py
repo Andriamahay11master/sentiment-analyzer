@@ -61,12 +61,12 @@ def explain_prediction(text, top_n=5):
 # -------------------------------
 # Routes
 # -------------------------------
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     prediction = None
     confidence = None
     text = ""
+    explanation = []
 
     if request.method == "POST":
         text = request.form["text"]
@@ -86,11 +86,14 @@ def index():
             prediction = "Negative"
             confidence = float(prob_negative)
 
+        explanation = explain_prediction(text)
+
     return render_template(
         "index.html",
         prediction=prediction,
         confidence=confidence,
-        text=text
+        text=text,
+        explanation=explanation
     )
 
 if __name__ == "__main__":
