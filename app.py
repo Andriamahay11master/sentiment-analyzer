@@ -33,6 +33,32 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 # -------------------------------
+# Explainability
+# -------------------------------
+def explain_prediction(text, top_n=5):
+    clean_text = clean_tweet(text)
+    vector = vectorizer.transform([clean_text])
+
+    feature_names = vectorizer.get_feature_names_out()
+    coefficients = model.coef_[0]
+
+    feature_indices = vector.nonzero()[1]
+
+    contributions = []
+    for idx in feature_indices:
+        word = feature_names[idx]
+        score = coefficients[idx] * vector[0, idx]
+        contributions.append((word, score))
+
+    contributions = sorted(
+        contributions,
+        key=lambda x: abs(x[1]),
+        reverse=True
+    )
+
+    return contributions[:top_n]
+
+# -------------------------------
 # Routes
 # -------------------------------
 
