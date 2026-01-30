@@ -24,6 +24,22 @@
         <h2>{{ prediction }}</h2>
         <p>Confidence: {{ (confidence * 100) | round(2) }}%</p>
       </div>
+      {% endif %} {% if explanation %}
+      <div class="explanation">
+        <h3>Why this prediction?</h3>
+        <ul>
+          {% for word, score in explanation %}
+          <li>
+            <strong>{{ word }}</strong>
+            {% if score > 0 %}
+            <span class="positive-word">(+{{ score | round(3) }})</span>
+            {% else %}
+            <span class="negative-word">({{ score | round(3) }})</span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
       {% endif %}
     </div>
   </body>
