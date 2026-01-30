@@ -43,3 +43,25 @@ button {
     color: #721c24;
   }
 }
+
+.explanation {
+  margin-top: 20px;
+  text-align: left;
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 5px;
+  }
+
+  .positive-word {
+    color: green;
+  }
+
+  .negative-word {
+    color: red;
+  }
+}
