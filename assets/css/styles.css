@@ -55,4 +55,22 @@ button:hover {
   color: #721c24;
 }
 
+.explanation {
+  margin-top: 20px;
+  text-align: left;
+}
+.explanation ul {
+  list-style: none;
+  padding: 0;
+}
+.explanation li {
+  margin-bottom: 5px;
+}
+.explanation .positive-word {
+  color: green;
+}
+.explanation .negative-word {
+  color: red;
+}
+
 /*# sourceMappingURL=styles.css.map */
