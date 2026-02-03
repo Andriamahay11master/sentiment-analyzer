@@ -16,21 +16,19 @@ data = pd.read_csv(url, encoding="latin-1")
 # Keep only relevant columns
 data = data[["tweet", "label"]]
 
-# -------------------------------
-# Normalize labels
-# 0 -> negative
-# 4 -> positive
-# -------------------------------
+# Force label column to numeric
+data["label"] = pd.to_numeric(data["label"], errors="coerce")
 
+# Map labels
 data["label"] = data["label"].map({
-    0: 0,
-    4: 1
+    0: 0,   # negative
+    1: 1    # positive
 })
 
-# 🔴 IMPORTANT: remove invalid labels created by mapping
+# Drop invalid rows
 data = data.dropna(subset=["label"])
 
-# Ensure labels are integers (required by sklearn)
+# Ensure int type
 data["label"] = data["label"].astype(int)
 
 # -------------------------------
@@ -38,8 +36,22 @@ data["label"] = data["label"].astype(int)
 # -------------------------------
 
 max_samples = 50000
+
 if len(data) > max_samples:
-    data = data.sample(max_samples, random_state=42)
+    data = (
+        data
+        .groupby("label", group_keys=False)
+        .apply(
+            lambda x: x.sample(
+                n=min(len(x), max_samples // data["label"].nunique()),
+                random_state=42
+            )
+        )
+    )
+
+# Sanity check
+print("Label distribution after sampling:")
+print(data["label"].value_counts())
 
 # -------------------------------
 # Clean text
@@ -58,6 +70,9 @@ data["clean_text"] = data["tweet"].apply(clean_tweet)
 
 X = data["clean_text"]
 y = data["label"]
+
+if y.nunique() < 2:
+    raise ValueError("Training data must contain at least 2 classes.")
 
 # -------------------------------
 # Train / test split
