@@ -123,3 +123,17 @@ svm_preds = svm.predict(X_test_vec)
 print("\n=== Linear SVM ===")
 print("Accuracy:", accuracy_score(y_test, svm_preds))
 print(classification_report(y_test, svm_preds))
+
+# -------------------------------
+# Save the best model
+import joblib
+from pathlib import Path
+
+# Build model directory path relative to this script
+model_dir = Path(__file__).resolve().parent.parent / "model"
+model_dir.mkdir(parents=True, exist_ok=True)
+
+best_model = svm  # Choose the best model based on performance
+joblib.dump(best_model, model_dir / "sentiment_model.joblib")
+joblib.dump(vectorizer, model_dir / "vectorizer.joblib")
+print(f"\nModel and vectorizer saved to {model_dir}")
