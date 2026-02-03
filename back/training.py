@@ -104,7 +104,7 @@ X_test_vec = vectorizer.transform(X_test)
 # Model 1: Logistic Regression
 # -------------------------------
 
-logreg = LogisticRegression(max_iter=1000)
+logreg = LogisticRegression(max_iter=1000, class_weight="balanced")
 logreg.fit(X_train_vec, y_train)
 logreg_preds = logreg.predict(X_test_vec)
 
@@ -116,7 +116,7 @@ print(classification_report(y_test, logreg_preds))
 # Model 2: Linear SVM
 # -------------------------------
 
-svm = LinearSVC()
+svm = LinearSVC(class_weight="balanced", max_iter=1000)
 svm.fit(X_train_vec, y_train)
 svm_preds = svm.predict(X_test_vec)
 
