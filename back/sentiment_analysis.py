@@ -1,20 +1,41 @@
-# Install dependencies as needed:
-# pip install kagglehub[pandas-datasets]
+import re
+import pandas as pd
+import joblib
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.svm import LinearSVC
+from sklearn.metrics import classification_report, accuracy_score
 
-# Set the path to the file you'd like to load
-file_path = "sentiment_analysis.csv"
+# -------------------------------
+# Load Kaggle dataset
+# -------------------------------
 
-# Load the latest version
 df = kagglehub.load_dataset(
-  KaggleDatasetAdapter.PANDAS,
-  "mdismielhossenabir/sentiment-analysis",
-  file_path,
-  # Provide any additional arguments like 
-  # sql_query or pandas_kwargs. See the 
-  # documenation for more information:
-  # https://github.com/Kaggle/kagglehub/blob/main/README.md#kaggledatasetadapterpandas
+    KaggleDatasetAdapter.PANDAS,
+    "mdismielhossenabir/sentiment-analysis",
+    "sentiment_analysis.csv"
 )
 
-print("First 5 records:", df.head())
+# Rename columns
+df = df.rename(columns={
+    "text": "text",
+    "sentiment": "label"
+})
+
+# Normalize labels
+df["label"] = df["label"].str.lower()
+
+# Keep only positive & negative
+df = df[df["label"].isin(["positive", "negative", "neutral"])]
+
+df["label"] = df["label"].map({
+    "negative": 0,
+    "positive": 1,
+    "neutral": 2
+})
+
+print("Label distribution:")
+print(df["label"].value_counts())
+
