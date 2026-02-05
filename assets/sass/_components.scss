@@ -13,6 +13,10 @@ textarea {
   padding: 10px;
   margin-bottom: 15px;
   resize: none;
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+  }
 }
 
 button {
@@ -25,6 +29,11 @@ button {
 
   &:hover {
     opacity: 0.9;
+  }
+
+  &:disabled {
+    background: $bg-disabled;
+    cursor: not-allowed;
   }
 }
 
