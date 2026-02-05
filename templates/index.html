@@ -13,7 +13,12 @@
       <h1>AI Sentiment Analyzer</h1>
 
       <form method="POST">
-        <textarea name="text" placeholder="Type a sentence..." required>
+        <textarea
+          name="text"
+          placeholder="Type a sentence..."
+          required
+          onkeyup=""
+        >
 {{ text }}</textarea
         >
         <button type="submit">Analyze</button>
@@ -42,5 +47,24 @@
       </div>
       {% endif %}
     </div>
+    <script type="text/javascript">
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          // Prevent the default action (inserting a new line)
+          event.preventDefault();
+          // Manually submit the form
+          document.getElementById("predictionForm").submit();
+        }
+      }
+
+      function toggleButton() {
+        const input = document.getElementById("messageInput");
+        const button = document.getElementById("predictBtn");
+        button.disabled = input.value.trim() === "";
+      }
+
+      // Check button state on page load
+      window.addEventListener("DOMContentLoaded", toggleButton);
+    </script>
   </body>
 </html>
