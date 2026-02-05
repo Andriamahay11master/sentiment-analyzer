@@ -1,6 +1,6 @@
 # Sentiment Analyzer
 
-A **machine learning–powered sentiment analysis web application** that classifies the emotional tone of text as **positive or negative**, using **Natural Language Processing (NLP)** and a **Linear Support Vector Machine (SVM)**. The application also provides **confidence scores and explainability**, highlighting which words most influenced each prediction.
+A **machine learning–powered sentiment analysis web application** that classifies the emotional tone of text as **positive, negative, or neutral**, using **Natural Language Processing (NLP)** and a **Linear Support Vector Machine (SVM)**. The application provides **confidence scores and explainability**, highlighting which words most influenced each prediction.
 
 ---
 
@@ -11,7 +11,7 @@ This project implements a **full end-to-end AI pipeline**, from data preprocessi
 The system:
 
 - Cleans and preprocesses noisy social media text (tweets)
-- Converts text into numerical features using **TF-IDF**
+- Converts text into numerical features using **TF-IDF** (unigrams/bigrams; some training scripts also include trigrams)
 - Trains and evaluates multiple models (Logistic Regression & Linear SVM)
 - Selects the best-performing model (Linear SVM)
 - Saves and reloads the trained model for production use
@@ -22,9 +22,9 @@ The system:
 
 ## ✨ Features
 
-- 🎯 **Sentiment Classification** — Positive or Negative sentiment
-- 📊 **Confidence Scoring** — Confidence derived from SVM decision scores (sigmoid)
-- 🔍 **Explainability** — Displays top words contributing to each prediction
+- 🎯 **Sentiment Classification** — Positive, Negative, and Neutral sentiment (3-class)
+- 📊 **Confidence Scoring** — Confidence derived from SVM decision scores (softmax over `decision_function` for multi-class; a sigmoid helper is used in a binary helper script)
+- 🔍 **Explainability** — Displays top words contributing to each prediction (per-class contributions)
 - 🧹 **Text Preprocessing** — URL, mention, hashtag, and noise removal
 - 💾 **Persistent Models** — Model and vectorizer saved with `joblib`
 - 🌐 **Web Application** — Flask-based UI with Sass-powered styling
@@ -37,7 +37,8 @@ The system:
 ```
 sentiment-analyzer/
 ├── app.py                     # Flask web application
-├── predict.py                 # Prediction & explainability logic
+├── predict.py                 # Programmatic prediction helpers (binary helper)
+├── back/sentiment_analysis.py # Alternate training script (Kaggle dataset via kagglehub)
 ├── back/
 │   ├── training.py            # Model training & evaluation
 │   └── vectorization.py       # Text cleaning & TF-IDF pipeline
@@ -61,6 +62,10 @@ sentiment-analyzer/
 - Python 3.8+
 - pip
 - Node.js (only if you want to compile Sass locally)
+
+Optional (for dataset download):
+
+- `kagglehub` (used by `back/sentiment_analysis.py` to fetch the dataset automatically)
 
 ### Setup
 
@@ -101,17 +106,13 @@ npm install -g sass
 python app.py
 ```
 
-Then open:
+Then open `http://127.0.0.1:5000` in your browser.
 
-```
-http://127.0.0.1:5000
-```
+Using the web UI you will receive:
 
-Enter a sentence and receive:
-
-- Sentiment prediction
-- Confidence score
-- Explanation of influential words
+- Sentiment prediction (Positive / Negative / Neutral)
+- Confidence score (computed from model decision scores)
+- Explanation: top contributing words and their contribution scores
 
 ---
 
@@ -122,7 +123,9 @@ from predict import predict_sentiment
 
 result = predict_sentiment("I love my job")
 print(result)
-# {'sentiment': 'Positive', 'confidence': 0.96}
+# Example (binary helper): {'sentiment': 'positive', 'confidence': 0.96}
+
+# Note: the web app (`app.py`) uses a 3-class mapping: 0→Negative, 1→Positive, 2→Neutral
 ```
 
 ---
@@ -130,11 +133,12 @@ print(result)
 ## 🧠 Model Details
 
 - **Algorithm**: Linear Support Vector Machine (LinearSVC)
-- **Vectorization**: TF-IDF (unigrams + bigrams)
+- **Vectorization**: TF-IDF (unigrams, bigrams; some scripts train with trigrams)
 - **Dataset**: Twitter Sentiment Analysis dataset
 - **Labels**:
-  - 0 → Negative
-  - 1 → Positive
+- - 0 → Negative
+- - 1 → Positive
+- - 2 → Neutral
 
 - **Preprocessing**:
   - Lowercasing
@@ -148,9 +152,9 @@ print(result)
 
 For each prediction, the system identifies the **most influential words** by:
 
-- Using SVM feature weights (`model.coef_`)
-- Computing per-word contribution scores
-- Displaying words that pushed the prediction toward positive or negative
+- Using SVM feature weights (`model.coef_`) for the predicted class
+- Computing per-word contribution scores (feature weight × TF-IDF value)
+- Displaying the top contributions (words pushing the prediction toward a class)
 
 This makes the model **transparent and interpretable**, rather than a black box.
 
@@ -171,17 +175,23 @@ Linear SVM achieved the **best overall performance**, outperforming Logistic Reg
 
 ## 🧪 Retraining the Model
 
-To retrain from scratch:
+To retrain from scratch you can run one of the training scripts:
 
 ```bash
+# Standard training (uses public CSV):
 python back/training.py
+
+# Alternate training that fetches a Kaggle dataset via kagglehub:
+python back/sentiment_analysis.py
 ```
 
-This will:
+Both scripts will:
 
 1. Load and preprocess the dataset
-2. Train and evaluate models
-3. Save the best model and vectorizer to `model/`
+2. Train and evaluate models (Logistic Regression & Linear SVM)
+3. Save the selected model and the fitted TF-IDF vectorizer to `model/`
+
+Note: `back/sentiment_analysis.py` uses `kagglehub` to download a dataset automatically; install it only if you plan to run that script.
 
 ---
 
