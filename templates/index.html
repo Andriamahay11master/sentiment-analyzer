@@ -12,16 +12,18 @@
     <div class="container">
       <h1>AI Sentiment Analyzer</h1>
 
-      <form method="POST">
+      <form method="POST" id="predictionForm">
         <textarea
           name="text"
           placeholder="Type a sentence..."
           required
-          onkeyup=""
+          onkeydown="handleKeyPress(event)"
+          oninput="toggleButton()"
+          id="messageInput"
         >
 {{ text }}</textarea
         >
-        <button type="submit">Analyze</button>
+        <button type="submit" id="predictBtn">Analyze</button>
       </form>
 
       {% if prediction %}
